@@ -5,7 +5,7 @@ using UnityEngine;
 public class ProcStatics : MonoBehaviour {
 
 	// 十二支のテーブル
-	public static string[] etoTable = {
+	public static string[] EtoTable = {
 		"申年",
 		"酉年",
 		"戌年",
@@ -21,13 +21,13 @@ public class ProcStatics : MonoBehaviour {
 	};
 
 	// 日本の時代名と元号、開始年（西暦）と終了年のテーブル（明治以降は計算できるので明治以前のみ）
-	public static int ofsetEOP = 3;	//時代の終了年へのオフセット
-	public static int ofsetSOP = 2;	//時代の開始年へのオフセット
-	public static int ofsetGEN = 0; //時代の名称へのオフセット
-	public static int ofsetERA = 1; //元号へのオフセット
-	public static string[,] periodsTbl = {
+	public static int OffsetEOP = 3;	//時代の終了年へのオフセット
+	public static int OffsetSOP = 2;	//時代の開始年へのオフセット
+	public static int OffsetGEN = 0; //時代の名称へのオフセット
+	public static int OffsetERA = 1; //元号へのオフセット
+	public static string[,] PeriodsTBL = {
 		//時代名   , 元号 ,開始年,終了年
-		{"弥生時代","？？","0","250"},
+		{"弥生時代","？？","-300","250"},
 		{"古墳時代","？？","250","645"},
 		{"飛鳥時代","大化","645","650"},
 		{"飛鳥時代","白雉","650","654"},
@@ -249,7 +249,12 @@ public class ProcStatics : MonoBehaviour {
 		{"江戸時代","文久","1861","1864"},
 		{"江戸時代","元治","1864","1865"},
 		{"江戸時代","慶応","1865","1868"},
-		{"近代"   ,"明治","1868","1911"}	// 念のためのストッパー
+		{"近代"   ,"明治","1868","1912"},
+		{"近代"   ,"大正","1912","1926"},
+		{"近代"   ,"昭和","1926","1940"},
+		{"現代"   ,"昭和","1926","1989"},
+		{"現代"   ,"平成","1989","2019"},
+		{"現代"   ,"新規","2019","10000"}
 	};
 
 	// Use this for initialization

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEditor;
 
 public class ProcMain : MonoBehaviour {
 	private string inputGenDisp = "/MainCanvas/FormuraPanel/Gen";
@@ -15,6 +16,8 @@ public class ProcMain : MonoBehaviour {
 	Text inputGen, inputNum, genResult, eraResult, etoResult, ageResult; 
 
 	private int ADYear;
+
+	public Rect windowRect1 = new Rect(20, 100, 120, 50);
 
 	// Use this for initialization
 	void Start () {
@@ -54,16 +57,54 @@ public class ProcMain : MonoBehaviour {
 
 	// 数字キー入力時の処理
 	public void NumberProc(Text num){
+		string gen = inputGen.text;
 		int digitLimit = 4;	// 西暦の時の桁数
-		if (inputGen.text != "西暦") {
+		if (gen != "西暦") {
 			digitLimit = 2;
 		}
-		// 桁数を確認して余裕があるなら表示に加える。桁がいっぱいの時は入力を無視する
-		if (inputNum.text.Length < digitLimit) {
+		// 状態の確認
+		if (ADYear != 0) {
+			// ＝が押されて、結果を表示済みの状態
+			// この時は再入力させるが、inputGenだけは、入力されている状態を保持する
+			inputNum.text = "";
+			genResult.text = "";
+			eraResult.text = "";
+			etoResult.text = "";
+			ageResult.text = "";
+			ADYear = 0;
+		} else {
+			// 入力中か、ACを押された直後の状態
+			// 桁数を確認して余裕があるなら表示に加える。桁がいっぱいの時は入力を無視する
+			if (inputNum.text.Length >= digitLimit) {
+				EditorUtility.DisplayDialog ("入力桁オーバー", gen + "は" + digitLimit.ToString () + "桁までです", "OK");
+				return;
+			}
+		}
+		// 入力値の追加と数字の表示処理を行う
+		numDispProc (num, gen);
+	}
+
+	void numDispProc(Text num, string gen){
+		int temp, limit = 10000;
+		string num_str = inputNum.text;
+		num_str += num.text;
+		int.TryParse (num_str, out temp);
+		// 設定されている時代に合わせて上限入力数を制限する
+		if (gen == "明治") {
+			limit = 45;
+		} else if (gen == "大正") {
+			limit = 15;
+		} else if (gen == "昭和") {
+			limit = 64;
+		} else if (gen == "平成") {
+			limit = 31;
+		}
+		if (temp > limit) {
+			// 表示は変更しない
+			EditorUtility.DisplayDialog ("入力値異常", gen + "は" + limit.ToString () + "年までです", "OK");
+		} else {
 			// 表示に加える
 			inputNum.text += num.text;
-		} else {
-			Debug.Log ("Digit Overflow");
 		}
 	}
 
@@ -129,62 +170,31 @@ public class ProcMain : MonoBehaviour {
 		int year;
 		ADYear = num;
 		// 西暦から和暦への変換を行う
-		if(num >= 1868){
-			// 明治以降
-			if (num >= 2019) {
-				gen = "現代";
-				era = "新規";
-				year = num - 2018;
-			} else if (num >= 1989) {
-				gen = "現代";
-				era = "平成";
-				year = num - 1988;
-			} else if (num >= 1926) {
-				// 第二次世界大戦以前を近代、それ以降を現代として表示する
-				if (num <= 1939) {
-					gen = "近代";
-				} else {
-					gen = "現代";
-				}
-				era = "昭和";
-				year = num - 1925;
-			} else if (num >= 1912) {
-				gen = "近代";
-				era = "大正";
-				year = num - 1911;
-			} else {
-				gen = "近代";
-				era = "明治";
-				year = num - 1867;
-			}
-		} else {
-			// 明治以前
-			int temp;
-			// 未設定ルートがあるので、gen,era,yearを暫定値で初期化しておく
-			gen = ProcStatics.periodsTbl [0, ProcStatics.ofsetGEN];
-			era = ProcStatics.periodsTbl [0, ProcStatics.ofsetERA];
-			year = 1;
+		int temp;
+		// 未設定ルートがあるので、gen,era,yearを暫定値で初期化しておく
+		gen = ProcStatics.PeriodsTBL [0, ProcStatics.OffsetGEN];
+		era = ProcStatics.PeriodsTBL [0, ProcStatics.OffsetERA];
+		year = 1;
 
-			// テーブルを走査して入力した西暦とマッチする時代を検索する
-			for (int i = 0; i < ProcStatics.periodsTbl.Length; i++) {
-				if(int.TryParse(ProcStatics.periodsTbl[i, ProcStatics.ofsetEOP], out temp)){
-					if(num < temp){
-						//時代名などをゴニョゴニョする
-						gen = ProcStatics.periodsTbl [i, ProcStatics.ofsetGEN];
-						era = ProcStatics.periodsTbl [i, ProcStatics.ofsetERA];
-						if (int.TryParse (ProcStatics.periodsTbl [i, ProcStatics.ofsetSOP], out temp)) {
-							// 正常に数値化できたら計算する
-							year = num - temp + 1;
-						} else {
-							// 正常に数値化できなかったらとりあえず、99年にする
-							year = 99;
-						}
-						// for文から抜ける
-						break;
+		// テーブルを走査して入力した西暦とマッチする時代を検索する
+		for (int i = 0; i < ProcStatics.PeriodsTBL.Length; i++) {
+			if(int.TryParse(ProcStatics.PeriodsTBL[i, ProcStatics.OffsetEOP], out temp)){
+				if(num < temp){
+					//時代名などをゴニョゴニョする
+					gen = ProcStatics.PeriodsTBL [i, ProcStatics.OffsetGEN];
+					era = ProcStatics.PeriodsTBL [i, ProcStatics.OffsetERA];
+					if (int.TryParse (ProcStatics.PeriodsTBL [i, ProcStatics.OffsetSOP], out temp)) {
+						// 正常に数値化できたら計算する
+						year = num - temp + 1;
+					} else {
+						// 正常に数値化できなかったらとりあえず、99年にする
+						year = 99;
 					}
-				} else {
-					throw new System.Exception ("Sorry...  our Table error");
+					// for文から抜ける
+					break;
 				}
+			} else {
+				throw new System.Exception ("Sorry...  our Table error");
 			}
 		}
 		resultDisp (year, gen, era);
@@ -244,11 +254,12 @@ public class ProcMain : MonoBehaviour {
 		int now = System.DateTime.Now.Year;
 		int age = now - year;
 		int ofset = year % 12;
-		etoResult.text = ProcStatics.etoTable [ofset];
+		etoResult.text = ProcStatics.EtoTable [ofset];
 		if (age >= 0) {
 			ageResult.text = "満" + age.ToString () + "  歳";
 		} else {
 			ageResult.text = "あと  " + Mathf.Abs((float)age).ToString() + "  年";
 		}
 	}
+
 }
