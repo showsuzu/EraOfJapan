@@ -22,4 +22,15 @@ public class ModalButtonScript : MonoBehaviour {
 		string name = transform.name;
 		GameObject.Destroy (gameObject.transform.parent.gameObject);
 	}
+
+	public void OnClickExit(){
+//		Application.runInBackground = false;
+		Application.Quit();
+	}
+
+	public void OnClickCancel(){
+		// 自分自身を削除する
+		string name = transform.name;
+		GameObject.Destroy (gameObject.transform.parent.gameObject);
+	}
 }

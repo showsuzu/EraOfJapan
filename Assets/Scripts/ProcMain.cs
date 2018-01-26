@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEditor;
 
 public class ProcMain : MonoBehaviour {
 	private string inputGenDisp = "/MainCanvas/FormuraPanel/Gen";
@@ -14,6 +13,7 @@ public class ProcMain : MonoBehaviour {
 
 	private string PrefabPlace = "Prefabs/";
 	private string ModalPrefab = "1BTNModalWindow";
+	private string ExitWindow = "ExitConfirmationWindow";
 
 	GameObject inputGenDispObj, inputNumDispObj;
 	Text inputGen, inputNum, genResult, eraResult, etoResult, ageResult; 
@@ -55,7 +55,17 @@ public class ProcMain : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-		
+#if UNITY_ANDROID
+		// Backキー押下
+		if (Input.GetKeyDown(KeyCode.Escape)) {
+			// アプリ終了
+			string title = "終了確認";
+			string explain = "アプケーションを終了しますか？";
+			string btn = "Yes";	// dummy
+			ModalDisp(ExitWindow, title, explain, btn);
+			return;
+		}
+#endif
 	}
 
 	// 数字キー入力時の処理
@@ -82,7 +92,7 @@ public class ProcMain : MonoBehaviour {
 				string title = "入力桁オーバー";
 				string explain = "入力桁をオーバーしました。\n"+ gen + "では、" + digitLimit.ToString () + "桁までの数値を入力してください";
 				string btn = "閉じれ";
-				ModalDisp(title, explain, btn);
+				ModalDisp(ModalPrefab, title, explain, btn);
 				return;
 			}
 		}
@@ -110,7 +120,7 @@ public class ProcMain : MonoBehaviour {
 			string title = "入力値異常";
 			string explain = "入力した値が、設定されている元号の期間を超えています。\n" + gen + "は" + limit.ToString () + "年までで入力してください";
 			string btn = "OK";
-			ModalDisp(title, explain, btn);
+			ModalDisp(ModalPrefab, title, explain, btn);
 		} else {
 			// 表示に加える
 			inputNum.text = num_str;
@@ -274,15 +284,17 @@ public class ProcMain : MonoBehaviour {
 	}
 
 	// 与えられた表示内容でモーダルウィンドウを表示する
-	void ModalDisp(string title, string explain, string btn){
-		if(GameObject.Find(ModalPrefab) == null){
-			GameObject prefab = (GameObject)Resources.Load (PrefabPlace + ModalPrefab);
+	void ModalDisp(string prefabStr, string title, string explain, string btn){
+		if(GameObject.Find(prefabStr) == null){
+			GameObject prefab = (GameObject)Resources.Load (PrefabPlace + prefabStr);
 			GameObject obj = GameObject.Instantiate(prefab);
-			obj.name = ModalPrefab;
-			GameObject.Find ("ModalTitle").GetComponent<Text> ().text = title;
-			GameObject.Find ("ModalExplain").GetComponent<Text> ().text = explain;
-			Text txtObj = GameObject.Find ("CloseButton").GetComponentInChildren<Text> ();
-			txtObj.text = btn;
+			obj.name = prefabStr;
+			if (prefabStr == ModalPrefab) {
+				GameObject.Find ("ModalTitle").GetComponent<Text> ().text = title;
+				GameObject.Find ("ModalExplain").GetComponent<Text> ().text = explain;
+				Text txtObj = GameObject.Find ("CloseButton").GetComponentInChildren<Text> ();
+				txtObj.text = btn;
+			}
 		}
 	}
 }
