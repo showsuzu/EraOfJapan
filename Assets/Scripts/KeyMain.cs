@@ -15,7 +15,7 @@ public class KeyMain : BaseButton {
 			if (num >= 0 && num <= 9) {
 				this.GetComponent<ProcMain> ().NumberProc (inputKey);
 			} else {
-				throw new System.Exception("An impossible number was entered!!");
+				throw new System.Exception ("An impossible number was entered!!");
 			}
 		} else {
 			// 数値以外のボタン入力

@@ -12,6 +12,9 @@ public class ProcMain : MonoBehaviour {
 	private string etoResultDisp = "/MainCanvas/ResultPanel/Eto Result";
 	private string ageResultDisp = "/MainCanvas/ResultPanel/Age Result";
 
+	private string PrefabPlace = "Prefabs/";
+	private string ModalPrefab = "1BTNModalWindow";
+
 	GameObject inputGenDispObj, inputNumDispObj;
 	Text inputGen, inputNum, genResult, eraResult, etoResult, ageResult; 
 
@@ -76,7 +79,10 @@ public class ProcMain : MonoBehaviour {
 			// 入力中か、ACを押された直後の状態
 			// 桁数を確認して余裕があるなら表示に加える。桁がいっぱいの時は入力を無視する
 			if (inputNum.text.Length >= digitLimit) {
-				EditorUtility.DisplayDialog ("入力桁オーバー", gen + "は" + digitLimit.ToString () + "桁までです", "OK");
+				string title = "入力桁オーバー";
+				string explain = "入力桁をオーバーしました。\n"+ gen + "では、" + digitLimit.ToString () + "桁までの数値を入力してください";
+				string btn = "閉じれ";
+				ModalDisp(title, explain, btn);
 				return;
 			}
 		}
@@ -101,10 +107,13 @@ public class ProcMain : MonoBehaviour {
 		}
 		if (temp > limit) {
 			// 表示は変更しない
-			EditorUtility.DisplayDialog ("入力値異常", gen + "は" + limit.ToString () + "年までです", "OK");
+			string title = "入力値異常";
+			string explain = "入力した値が、設定されている元号の期間を超えています。\n" + gen + "は" + limit.ToString () + "年までで入力してください";
+			string btn = "OK";
+			ModalDisp(title, explain, btn);
 		} else {
 			// 表示に加える
-			inputNum.text += num.text;
+			inputNum.text = num_str;
 		}
 	}
 
@@ -115,9 +124,9 @@ public class ProcMain : MonoBehaviour {
 			initialDisp ();
 		} else if(key.text == "WiKi") {
 			if (ADYear != 0) {
-				string url = "https://ja.wikipedia.org/wiki/" + ADYear + "%E5%B9%B4";
+				string uri = "https://ja.wikipedia.org/wiki/" + ADYear + WWW.EscapeURL("年");
 				// 外部ブラウザを使ってWiKiを表示する
-				Application.OpenURL(url);
+				Application.OpenURL(uri);
 			}
 		} else if(key.text == "＝") {
 			// 変換する
@@ -166,15 +175,17 @@ public class ProcMain : MonoBehaviour {
 
 	// 西暦から和暦への変換を行う
 	void ADtoERA(int num){
+		// 西暦から和暦への変換を行う
 		string era, gen;
 		int year;
-		ADYear = num;
-		// 西暦から和暦への変換を行う
 		int temp;
+
 		// 未設定ルートがあるので、gen,era,yearを暫定値で初期化しておく
 		gen = ProcStatics.PeriodsTBL [0, ProcStatics.OffsetGEN];
 		era = ProcStatics.PeriodsTBL [0, ProcStatics.OffsetERA];
 		year = 1;
+
+		ADYear = num;
 
 		// テーブルを走査して入力した西暦とマッチする時代を検索する
 		for (int i = 0; i < ProcStatics.PeriodsTBL.Length; i++) {
@@ -262,4 +273,16 @@ public class ProcMain : MonoBehaviour {
 		}
 	}
 
+	// 与えられた表示内容でモーダルウィンドウを表示する
+	void ModalDisp(string title, string explain, string btn){
+		if(GameObject.Find(ModalPrefab) == null){
+			GameObject prefab = (GameObject)Resources.Load (PrefabPlace + ModalPrefab);
+			GameObject obj = GameObject.Instantiate(prefab);
+			obj.name = ModalPrefab;
+			GameObject.Find ("ModalTitle").GetComponent<Text> ().text = title;
+			GameObject.Find ("ModalExplain").GetComponent<Text> ().text = explain;
+			Text txtObj = GameObject.Find ("CloseButton").GetComponentInChildren<Text> ();
+			txtObj.text = btn;
+		}
+	}
 }
