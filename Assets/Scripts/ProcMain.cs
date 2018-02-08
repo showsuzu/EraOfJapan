@@ -11,10 +11,6 @@ public class ProcMain : MonoBehaviour {
 	private string etoResultDisp = "/MainCanvas/ResultPanel/Eto Result";
 	private string ageResultDisp = "/MainCanvas/ResultPanel/Age Result";
 
-	private string PrefabPlace = "Prefabs/";
-	private string ModalPrefab = "1BTNModalWindow";
-	private string ExitWindow = "ExitConfirmationWindow";
-
 	GameObject inputGenDispObj, inputNumDispObj;
 	Text inputGen, inputNum, genResult, eraResult, etoResult, ageResult; 
 
@@ -62,7 +58,7 @@ public class ProcMain : MonoBehaviour {
 			string title = "終了確認";
 			string explain = "アプケーションを終了しますか？";
 			string btn = "Yes";	// dummy
-			ModalDisp(ExitWindow, title, explain, btn);
+			AppUtility.ModalUtility.ModalDisp (title, explain, btn, (int)AppUtility.ModalUtility.MODALTYPE.EXIT_MODAL);
 			return;
 		}
 #endif
@@ -92,7 +88,7 @@ public class ProcMain : MonoBehaviour {
 				string title = "入力桁オーバー";
 				string explain = "入力桁をオーバーしました。\n"+ gen + "では、" + digitLimit.ToString () + "桁までの数値を入力してください";
 				string btn = "閉じれ";
-				ModalDisp(ModalPrefab, title, explain, btn);
+				AppUtility.ModalUtility.ModalDisp (title, explain, btn, (int)AppUtility.ModalUtility.MODALTYPE.BTN1_MODAL);
 				return;
 			}
 		}
@@ -120,7 +116,7 @@ public class ProcMain : MonoBehaviour {
 			string title = "入力値異常";
 			string explain = "入力した値が、設定されている元号の期間を超えています。\n" + gen + "は" + limit.ToString () + "年までで入力してください";
 			string btn = "OK";
-			ModalDisp(ModalPrefab, title, explain, btn);
+			AppUtility.ModalUtility.ModalDisp (title, explain, btn, (int)AppUtility.ModalUtility.MODALTYPE.BTN1_MODAL);
 		} else {
 			// 表示に加える
 			inputNum.text = num_str;
@@ -283,18 +279,4 @@ public class ProcMain : MonoBehaviour {
 		}
 	}
 
-	// 与えられた表示内容でモーダルウィンドウを表示する
-	void ModalDisp(string prefabStr, string title, string explain, string btn){
-		if(GameObject.Find(prefabStr) == null){
-			GameObject prefab = (GameObject)Resources.Load (PrefabPlace + prefabStr);
-			GameObject obj = GameObject.Instantiate(prefab);
-			obj.name = prefabStr;
-			if (prefabStr == ModalPrefab) {
-				GameObject.Find ("ModalTitle").GetComponent<Text> ().text = title;
-				GameObject.Find ("ModalExplain").GetComponent<Text> ().text = explain;
-				Text txtObj = GameObject.Find ("CloseButton").GetComponentInChildren<Text> ();
-				txtObj.text = btn;
-			}
-		}
-	}
 }
