@@ -234,7 +234,7 @@ public class ProcMain : MonoBehaviour {
 			case "平成":
 				ADYear = 2000 + num - 12;
 				break;
-			case "新規":
+			case "令和":
 				ADYear = 2000 + num + 18;
 				break;
 			default:
