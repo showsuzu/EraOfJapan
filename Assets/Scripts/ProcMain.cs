@@ -4,12 +4,12 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class ProcMain : MonoBehaviour {
-	private string inputGenDisp = "/MainCanvas/FormuraPanel/Gen";
-	private string inputNumDisp = "/MainCanvas/FormuraPanel/Number";
-	private string genResultDisp = "/MainCanvas/ResultPanel/Gen Result";
-	private string eraResultDisp = "/MainCanvas/ResultPanel/Era Result";
-	private string etoResultDisp = "/MainCanvas/ResultPanel/Eto Result";
-	private string ageResultDisp = "/MainCanvas/ResultPanel/Age Result";
+	private string inputGenDisp = "/MainCanvas/SafeArea/FormuraPanel/Gen";
+	private string inputNumDisp = "/MainCanvas/SafeArea/FormuraPanel/Number";
+	private string genResultDisp = "/MainCanvas/SafeArea/ResultPanel/Gen Result";
+	private string eraResultDisp = "/MainCanvas/SafeArea/ResultPanel/Era Result";
+	private string etoResultDisp = "/MainCanvas/SafeArea/ResultPanel/Eto Result";
+	private string ageResultDisp = "/MainCanvas/SafeArea/ResultPanel/Age Result";
 
 	GameObject inputGenDispObj, inputNumDispObj;
 	Text inputGen, inputNum, genResult, eraResult, etoResult, ageResult; 
